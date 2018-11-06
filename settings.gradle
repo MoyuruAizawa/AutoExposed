@@ -1,0 +1,2 @@
+rootProject.name = 'io.moyuru.autoexposed'
+include ':annotation', ':processor', ':sample'

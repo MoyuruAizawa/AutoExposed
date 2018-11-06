@@ -1,0 +1,9 @@
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile 'org.jetbrains.exposed:exposed:0.11.2'
+    compile project(':annotation')
+    kapt project(':processor')
+}

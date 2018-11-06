@@ -1,0 +1,8 @@
+apply plugin: 'kotlin'
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "com.squareup:kotlinpoet:1.0.0-RC2"
+    compile 'org.jetbrains.exposed:exposed:0.11.2'
+    compile project(':annotation')
+}
