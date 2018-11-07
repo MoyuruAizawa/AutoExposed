@@ -2,6 +2,8 @@ package io.moyuru.autoexposed
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import io.moyuru.autoexposed.spec.ColumnSpec
+import io.moyuru.autoexposed.spec.TableObjectSpec
 import org.jetbrains.exposed.sql.Column
 import java.io.File
 import javax.annotation.processing.ProcessingEnvironment

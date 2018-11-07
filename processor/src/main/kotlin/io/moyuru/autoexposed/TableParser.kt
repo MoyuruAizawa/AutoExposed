@@ -1,6 +1,9 @@
 package io.moyuru.autoexposed
 
 import io.moyuru.autoexposed.annotation.Column
+import io.moyuru.autoexposed.spec.ColumnSpec
+import io.moyuru.autoexposed.spec.TableObjectSpec
+import io.moyuru.autoexposed.spec.TableSpec
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
@@ -12,7 +15,9 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
         val tableName = element.simpleName.toString()
         val columns = parseColumn(element)
         val tableSpec = TableSpec(tableName, columns)
-        return TableObjectSpec(element.enclosingElement.toString(), "${tableSpec.tableName}Table", tableSpec)
+        return TableObjectSpec(element.enclosingElement.toString(),
+            "${tableSpec.tableName}Table",
+            tableSpec)
     }
 
     private fun parseColumn(typeElement: TypeElement): List<ColumnSpec> {
@@ -26,7 +31,10 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
                 fe to c
             }
             .map { (fe, c) ->
-                ColumnSpec(fe.simpleName.toString(), fe.asType(), ExposedDataType.fromTypeMirror(fe.asType()), c.length)
+                ColumnSpec(fe.simpleName.toString(),
+                    fe.asType(),
+                    ExposedDataType.fromTypeMirror(fe.asType()),
+                    c.length)
             }
     }
 
