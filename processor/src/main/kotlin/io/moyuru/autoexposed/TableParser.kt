@@ -14,9 +14,9 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
 //        val table = typeElement.getAnnotation(Table::class.java)
         val tableName = element.simpleName.toString()
         val columns = parseColumn(element)
-        val tableSpec = TableSpec(tableName, columns)
+        val tableSpec = TableSpec(tableName.toSnakeCase(), columns)
         return TableObjectSpec(element.enclosingElement.toString(),
-            "${tableSpec.tableName}Table",
+            "${tableName}Table",
             tableSpec)
     }
 
@@ -31,7 +31,7 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
                 fe to c
             }
             .map { (fe, c) ->
-                ColumnSpec(fe.simpleName.toString(),
+                ColumnSpec(fe.simpleName.toString().toSnakeCase(),
                     fe.asType(),
                     ExposedDataType.fromTypeMirror(fe.asType()),
                     c.length)
