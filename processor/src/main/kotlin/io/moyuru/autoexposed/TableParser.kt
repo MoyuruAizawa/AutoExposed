@@ -1,5 +1,6 @@
 package io.moyuru.autoexposed
 
+import com.squareup.kotlinpoet.asTypeName
 import io.moyuru.autoexposed.annotation.Column
 import io.moyuru.autoexposed.annotation.PrimaryKey
 import io.moyuru.autoexposed.spec.ColumnSpec
@@ -56,9 +57,16 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
             if (c != null) fe to c
             else null
         }.map { (fe, c) ->
+            val exposedDataType = ExposedDataType.fromTypeMirror(fe.asType())
+
+            if (exposedDataType !is ExposedDataType.Varchar && c.length > 0) {
+                processingEnv.printMessage(Diagnostic.Kind.ERROR,
+                    "\'${typeElement.simpleName}#${fe.simpleName}: ${fe.asType().asTypeName()}\' length param is supported")
+            }
+
             ColumnSpec(fe.simpleName.toString().toSnakeCase(),
                 fe.asType(),
-                ExposedDataType.fromTypeMirror(fe.asType()),
+                exposedDataType,
                 c.length)
         }
     }
