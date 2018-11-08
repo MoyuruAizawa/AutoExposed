@@ -24,8 +24,18 @@ sealed class ExposedDataType(val funcName: String) {
                 TypeKind.NULL -> throw e
                 TypeKind.ARRAY -> throw e
                 TypeKind.DECLARED -> when (tm.asTypeName()) {
+                    java.lang.Boolean::class.java.asTypeName() -> Bool()
+                    java.lang.Byte::class.java.asTypeName() -> Integer()
+                    java.lang.Short::class.java.asTypeName() -> Integer()
+                    java.lang.Integer::class.java.asTypeName() -> Integer()
+                    java.lang.Long::class.java.asTypeName() -> Long()
+                    java.lang.Float::class.java.asTypeName() -> Float()
+                    java.lang.Double::class.java.asTypeName() -> Double()
+                    java.lang.String::class.java.asTypeName() -> Varchar()
                     String::class.java.asTypeName() -> Varchar()
-                    DateTime::class.java.asTypeName() -> DateTime()
+                    org.joda.time.LocalDate::class.java.asTypeName() -> Date()
+                    org.joda.time.LocalDateTime::class.java.asTypeName() -> DateTime()
+                    org.joda.time.DateTime::class.java.asTypeName() -> DateTime()
                     BigDecimal::class.java.asTypeName() -> Decimal()
                     ByteArray::class.java.asTypeName() -> Binary()
                     java.sql.Blob::class.java.asTypeName() -> Blob()

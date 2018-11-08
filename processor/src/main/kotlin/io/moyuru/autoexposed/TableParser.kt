@@ -6,6 +6,7 @@ import io.moyuru.autoexposed.annotation.PrimaryKey
 import io.moyuru.autoexposed.spec.ColumnSpec
 import io.moyuru.autoexposed.spec.TableObjectSpec
 import io.moyuru.autoexposed.spec.TableSpec
+import org.jetbrains.annotations.Nullable
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
@@ -46,6 +47,7 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
                 exposedDataType = ExposedDataType.fromTypeMirror(fe.asType()),
                 length = it.length,
                 autoInclement = it.autoIncrement,
+                isNullable = fe.getAnnotation(Nullable::class.java) != null,
                 isPrimary = true)
         }
     }
@@ -74,6 +76,7 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
                 autoInclement = c.autoIncrement,
                 uniqueIndex = c.uniqueIndex,
                 index = c.index,
+                isNullable = fe.getAnnotation(Nullable::class.java) != null,
                 isPrimary = false)
         }
     }
