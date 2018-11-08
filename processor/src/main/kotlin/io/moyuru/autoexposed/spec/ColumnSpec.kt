@@ -10,4 +10,5 @@ data class ColumnSpec(
     val length: Int,
     val autoInclement: Boolean = false,
     val uniqueIndex: Boolean = false,
+    val index: Boolean = false,
     val isPrimary: Boolean = false)
