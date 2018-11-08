@@ -5,4 +5,5 @@ package io.moyuru.autoexposed.annotation
 annotation class Column(
     val length: Int = 0,
     val autoIncrement: Boolean = false,
-    val uniqueIndex: Boolean = false)
+    val uniqueIndex: Boolean = false,
+    val index: Boolean = false)

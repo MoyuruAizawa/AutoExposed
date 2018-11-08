@@ -40,11 +40,11 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
             ?: return null
 
         return primaryKeyAnnotatedElement.primaryKey?.let {
-            ColumnSpec(fields.simpleName.toString().toSnakeCase(),
-                fields.asType(),
-                ExposedDataType.fromTypeMirror(fields.asType()),
-                it.length,
-                it.autoIncrement,
+            ColumnSpec(name = fields.simpleName.toString().toSnakeCase(),
+                type = fields.asType(),
+                exposedDataType = ExposedDataType.fromTypeMirror(fields.asType()),
+                length = it.length,
+                autoInclement = it.autoIncrement,
                 isPrimary = true)
         }
     }
@@ -65,12 +65,14 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
                     "\'${typeElement.simpleName}#${fe.simpleName}: ${fe.asType().asTypeName()}\' length param is supported")
             }
 
-            ColumnSpec(fe.simpleName.toString().toSnakeCase(),
-                fe.asType(),
-                exposedDataType,
-                c.length,
-                c.autoIncrement,
-                c.uniqueIndex)
+            ColumnSpec(name = fe.simpleName.toString().toSnakeCase(),
+                type = fe.asType(),
+                exposedDataType = exposedDataType,
+                length = c.length,
+                autoInclement = c.autoIncrement,
+                uniqueIndex = c.uniqueIndex,
+                index = c.index,
+                isPrimary = false)
         }
     }
 
