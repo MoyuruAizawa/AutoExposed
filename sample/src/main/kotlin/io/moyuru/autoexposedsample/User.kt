@@ -6,7 +6,7 @@ import io.moyuru.autoexposed.annotation.Table
 
 @Table
 data class User(
-    @PrimaryKey val id: Long,
+    @PrimaryKey(autoIncrement = true) val id: Long,
     @Column(length = 128) val name: String,
     @Column val age: Int,
     @Column val isPaid: Boolean)

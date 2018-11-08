@@ -44,6 +44,7 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
                 fields.asType(),
                 ExposedDataType.fromTypeMirror(fields.asType()),
                 it.length,
+                it.autoIncrement,
                 isPrimary = true)
         }
     }
@@ -67,7 +68,8 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
             ColumnSpec(fe.simpleName.toString().toSnakeCase(),
                 fe.asType(),
                 exposedDataType,
-                c.length)
+                c.length,
+                c.autoIncrement)
         }
     }
 
