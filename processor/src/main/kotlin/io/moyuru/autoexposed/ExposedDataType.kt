@@ -1,7 +1,6 @@
 package io.moyuru.autoexposed
 
 import com.squareup.kotlinpoet.asTypeName
-import java.lang.NullPointerException
 import java.math.BigDecimal
 import javax.activation.UnsupportedDataTypeException
 import javax.lang.model.type.TypeKind
@@ -10,6 +9,7 @@ import javax.lang.model.type.TypeMirror
 sealed class ExposedDataType(val funcName: String) {
     companion object {
         fun fromTypeMirror(tm: TypeMirror): ExposedDataType {
+            val e by lazy { UnsupportedDataTypeException("${tm.kind.name} is not supported") }
             return when (tm.kind ?: throw NullPointerException()) {
                 TypeKind.BOOLEAN -> Bool()
                 TypeKind.BYTE -> Integer()
@@ -19,26 +19,26 @@ sealed class ExposedDataType(val funcName: String) {
                 TypeKind.CHAR -> Char()
                 TypeKind.FLOAT -> Float()
                 TypeKind.DOUBLE -> Double()
-                TypeKind.VOID -> throw UnsupportedDataTypeException()
-                TypeKind.NONE -> throw UnsupportedDataTypeException()
-                TypeKind.NULL -> throw UnsupportedDataTypeException()
-                TypeKind.ARRAY -> throw UnsupportedDataTypeException()
+                TypeKind.VOID -> throw e
+                TypeKind.NONE -> throw e
+                TypeKind.NULL -> throw e
+                TypeKind.ARRAY -> throw e
                 TypeKind.DECLARED -> when (tm.asTypeName()) {
                     String::class.java.asTypeName() -> Varchar()
                     DateTime::class.java.asTypeName() -> DateTime()
                     BigDecimal::class.java.asTypeName() -> Decimal()
                     ByteArray::class.java.asTypeName() -> Binary()
                     java.sql.Blob::class.java.asTypeName() -> Blob()
-                    else -> throw UnsupportedDataTypeException()
+                    else -> throw UnsupportedDataTypeException("${tm.asTypeName()}")
                 }
-                TypeKind.ERROR -> throw UnsupportedDataTypeException()
-                TypeKind.TYPEVAR -> throw UnsupportedDataTypeException()
-                TypeKind.WILDCARD -> throw UnsupportedDataTypeException()
-                TypeKind.PACKAGE -> throw UnsupportedDataTypeException()
-                TypeKind.EXECUTABLE -> throw UnsupportedDataTypeException()
-                TypeKind.OTHER -> throw UnsupportedDataTypeException()
-                TypeKind.UNION -> throw UnsupportedDataTypeException()
-                TypeKind.INTERSECTION -> throw UnsupportedDataTypeException()
+                TypeKind.ERROR -> throw e
+                TypeKind.TYPEVAR -> throw e
+                TypeKind.WILDCARD -> throw e
+                TypeKind.PACKAGE -> throw e
+                TypeKind.EXECUTABLE -> throw e
+                TypeKind.OTHER -> throw e
+                TypeKind.UNION -> throw e
+                TypeKind.INTERSECTION -> throw e
             }
         }
     }
