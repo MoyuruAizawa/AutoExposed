@@ -9,4 +9,5 @@ data class ColumnSpec(
     val exposedDataType: ExposedDataType,
     val length: Int,
     val autoInclement: Boolean = false,
+    val uniqueIndex: Boolean = false,
     val isPrimary: Boolean = false)

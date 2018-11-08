@@ -69,7 +69,8 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
                 fe.asType(),
                 exposedDataType,
                 c.length,
-                c.autoIncrement)
+                c.autoIncrement,
+                c.uniqueIndex)
         }
     }
 

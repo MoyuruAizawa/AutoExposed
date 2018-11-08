@@ -55,6 +55,7 @@ class TableObjectGenerator(private val processingEnv: ProcessingEnvironment) {
 
             if (spec.isPrimary) add(".primaryKey()")
             if (spec.autoInclement) add(".autoIncrement()")
+            if (spec.uniqueIndex) add(".uniqueIndex()")
         }.build()
     }
 
