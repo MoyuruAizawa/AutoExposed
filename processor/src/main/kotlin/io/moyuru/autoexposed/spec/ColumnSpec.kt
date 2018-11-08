@@ -8,4 +8,5 @@ data class ColumnSpec(
     val type: TypeMirror,
     val exposedDataType: ExposedDataType,
     val length: Int,
+    val autoInclement: Boolean = false,
     val isPrimary: Boolean = false)

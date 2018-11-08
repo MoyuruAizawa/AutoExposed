@@ -53,8 +53,8 @@ class TableObjectGenerator(private val processingEnv: ProcessingEnvironment) {
             else
                 add("%L(%S)", ExposedDataType.fromTypeMirror(spec.type).funcName, spec.name)
 
-            if (spec.isPrimary)
-                add(".primaryKey()")
+            if (spec.isPrimary) add(".primaryKey()")
+            if (spec.autoInclement) add(".autoIncrement()")
         }.build()
     }
 
