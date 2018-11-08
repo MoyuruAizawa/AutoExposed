@@ -49,9 +49,12 @@ class TableObjectGenerator(private val processingEnv: ProcessingEnvironment) {
     private fun buildPropertyInitializer(spec: ColumnSpec): CodeBlock {
         return CodeBlock.builder().apply {
             if (spec.exposedDataType is ExposedDataType.Varchar)
-                add("%L(%S, length = %L)", ExposedDataType.fromTypeMirror(spec.type).funcName, spec.name, spec.length)
+                add("%L(%S, length = %L)",
+                    ExposedDataType.fromTypeMirror(spec.type).funcName,
+                    spec.columnName,
+                    spec.length)
             else
-                add("%L(%S)", ExposedDataType.fromTypeMirror(spec.type).funcName, spec.name)
+                add("%L(%S)", ExposedDataType.fromTypeMirror(spec.type).funcName, spec.columnName)
 
             if (spec.isPrimary) add(".primaryKey()")
             if (spec.autoInclement) add(".autoIncrement()")

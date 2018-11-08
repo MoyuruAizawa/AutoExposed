@@ -35,14 +35,15 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
             }
             .firstOrNull() ?: return null
 
-        val fields = typeElement.enclosedElements
+        val fe = typeElement.enclosedElements
             .firstOrNull { it is VariableElement && primaryKeyAnnotatedElement.simpleName.startsWith(it.simpleName) }
             ?: return null
 
         return primaryKeyAnnotatedElement.primaryKey?.let {
-            ColumnSpec(name = fields.simpleName.toString().toSnakeCase(),
-                type = fields.asType(),
-                exposedDataType = ExposedDataType.fromTypeMirror(fields.asType()),
+            ColumnSpec(name = fe.simpleName.toString(),
+                columnName = fe.simpleName.toString().toSnakeCase(),
+                type = fe.asType(),
+                exposedDataType = ExposedDataType.fromTypeMirror(fe.asType()),
                 length = it.length,
                 autoInclement = it.autoIncrement,
                 isPrimary = true)
@@ -65,7 +66,8 @@ class TableParser(private val processingEnv: ProcessingEnvironment) {
                     "\'${typeElement.simpleName}#${fe.simpleName}: ${fe.asType().asTypeName()}\' length param is supported")
             }
 
-            ColumnSpec(name = fe.simpleName.toString().toSnakeCase(),
+            ColumnSpec(name = fe.simpleName.toString(),
+                columnName = fe.simpleName.toString().toSnakeCase(),
                 type = fe.asType(),
                 exposedDataType = exposedDataType,
                 length = c.length,
