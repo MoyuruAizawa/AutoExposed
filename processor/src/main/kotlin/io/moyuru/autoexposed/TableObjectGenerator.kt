@@ -46,14 +46,16 @@ class TableObjectGenerator(private val processingEnv: ProcessingEnvironment) {
             .build()
     }
 
-    private fun buildPropertyInitializer(columnSpec: ColumnSpec): CodeBlock {
-        return when {
-            columnSpec.exposedDataType is ExposedDataType.Varchar ->
-                CodeBlock.of("%L(%S, length = %L)",
-                    ExposedDataType.fromTypeMirror(columnSpec.type).funcName, columnSpec.name, columnSpec.length)
-            else ->
-                CodeBlock.of("%L(%S)", ExposedDataType.fromTypeMirror(columnSpec.type).funcName, columnSpec.name)
-        }
+    private fun buildPropertyInitializer(spec: ColumnSpec): CodeBlock {
+        return CodeBlock.builder().apply {
+            if (spec.exposedDataType is ExposedDataType.Varchar)
+                add("%L(%S, length = %L)", ExposedDataType.fromTypeMirror(spec.type).funcName, spec.name, spec.length)
+            else
+                add("%L(%S)", ExposedDataType.fromTypeMirror(spec.type).funcName, spec.name)
+
+            if (spec.isPrimary)
+                add(".primaryKey()")
+        }.build()
     }
 
     private fun TypeName.correctStringType() =

@@ -1,6 +1,7 @@
 package io.moyuru.autoexposed
 
 import io.moyuru.autoexposed.annotation.Column
+import io.moyuru.autoexposed.annotation.PrimaryKey
 import io.moyuru.autoexposed.spec.ColumnSpec
 import io.moyuru.autoexposed.spec.TableObjectSpec
 import io.moyuru.autoexposed.spec.TableSpec
@@ -8,36 +9,62 @@ import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
+import javax.tools.Diagnostic
 
 class TableParser(private val processingEnv: ProcessingEnvironment) {
     fun parse(element: TypeElement): TableObjectSpec {
 //        val table = typeElement.getAnnotation(Table::class.java)
         val tableName = element.simpleName.toString()
-        val columns = parseColumn(element)
+        val columns = listOfNotNull(extractPrimaryKey(element)) + extractColumn(element)
+
         val tableSpec = TableSpec(tableName.toSnakeCase(), columns)
         return TableObjectSpec(element.enclosingElement.toString(),
             "${tableName}Table",
             tableSpec)
     }
 
-    private fun parseColumn(typeElement: TypeElement): List<ColumnSpec> {
-        val fields = typeElement.enclosedElements.filter { it is VariableElement }
-        val columnAnnotatedElement = typeElement.enclosedElements.filter { it.hasColumn() }
+    private fun extractPrimaryKey(typeElement: TypeElement): ColumnSpec? {
+        val primaryKeyAnnotatedElement = typeElement.enclosedElements
+            .filter { it.hasPrimaryKey() }
+            .also {
+                if (it.size > 1) {
+                    processingEnv.printMessage(Diagnostic.Kind.ERROR, "PrimaryKey must be only one.")
+                    return null
+                }
+            }
+            .firstOrNull() ?: return null
 
-        return fields
-            .map { fe ->
-                val c = columnAnnotatedElement.find { it.simpleName.startsWith(fe.simpleName.toString()) }?.column
-                requireNotNull(c)
-                fe to c
-            }
-            .map { (fe, c) ->
-                ColumnSpec(fe.simpleName.toString().toSnakeCase(),
-                    fe.asType(),
-                    ExposedDataType.fromTypeMirror(fe.asType()),
-                    c.length)
-            }
+        val fields = typeElement.enclosedElements
+            .firstOrNull { it is VariableElement && primaryKeyAnnotatedElement.simpleName.startsWith(it.simpleName) }
+            ?: return null
+
+        return primaryKeyAnnotatedElement.primaryKey?.let {
+            ColumnSpec(fields.simpleName.toString().toSnakeCase(),
+                fields.asType(),
+                ExposedDataType.fromTypeMirror(fields.asType()),
+                it.length,
+                isPrimary = true)
+        }
+    }
+
+    private fun extractColumn(typeElement: TypeElement): List<ColumnSpec> {
+        val fields = typeElement.enclosedElements.filter { it is VariableElement }
+        val columnAnnotatedElement = typeElement.enclosedElements.filter { it.hasColumn() && !it.hasPrimaryKey() }
+
+        return fields.mapNotNull { fe ->
+            val c = columnAnnotatedElement.find { it.simpleName.startsWith(fe.simpleName) }?.column
+            if (c != null) fe to c
+            else null
+        }.map { (fe, c) ->
+            ColumnSpec(fe.simpleName.toString().toSnakeCase(),
+                fe.asType(),
+                ExposedDataType.fromTypeMirror(fe.asType()),
+                c.length)
+        }
     }
 
     private val Element.column get() = getAnnotation(Column::class.java)
+    private val Element.primaryKey get() = getAnnotation(PrimaryKey::class.java)
     private fun Element.hasColumn() = column != null
+    private fun Element.hasPrimaryKey() = primaryKey != null
 }
