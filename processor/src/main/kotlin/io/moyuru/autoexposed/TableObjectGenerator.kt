@@ -38,11 +38,12 @@ class TableObjectGenerator(private val processingEnv: ProcessingEnvironment) {
             .build()
     }
 
-    private fun buildPropertySpec(columnSpec: ColumnSpec): PropertySpec {
+    private fun buildPropertySpec(spec: ColumnSpec): PropertySpec {
         return PropertySpec.builder(
-            columnSpec.name,
-            Column::class.asClassName().parameterizedBy(columnSpec.type.asTypeName().correctStringType()))
-            .initializer(buildPropertyInitializer(columnSpec))
+            spec.name,
+            Column::class.asClassName()
+                .parameterizedBy(spec.type.asTypeName().kotlinze().let { if (spec.isNullable) it.asNullable() else it }))
+            .initializer(buildPropertyInitializer(spec))
             .build()
     }
 
@@ -62,9 +63,22 @@ class TableObjectGenerator(private val processingEnv: ProcessingEnvironment) {
                 spec.uniqueIndex -> add(".uniqueIndex()")
                 spec.index -> add(".index()")
             }
+            if (spec.isNullable) add(".nullable()")
         }.build()
     }
 
-    private fun TypeName.correctStringType() =
-        if (this.toString() == "java.lang.String") ClassName("kotlin", "String") else this
+    private fun TypeName.kotlinze(): TypeName {
+        fun String.toJava() = "java.lang.$this"
+        return when (this.toString()) {
+            "Boolean".toJava() -> Boolean::class.asClassName()
+            "Byte".toJava() -> Byte::class.asClassName()
+            "Short".toJava() -> Short::class.asClassName()
+            "Integer".toJava() -> Integer::class.asClassName()
+            "Long".toJava() -> Long::class.asClassName()
+            "Float".toJava() -> Float::class.asClassName()
+            "Double".toJava() -> Double::class.asClassName()
+            "String".toJava() -> String::class.asClassName()
+            else -> this
+        }
+    }
 }
